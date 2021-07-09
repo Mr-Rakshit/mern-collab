@@ -7,11 +7,11 @@ const jwt = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
   try {
-    const { email, password, passwordVerify } = req.body;
+    const { email, password } = req.body;
 
     // validation
     console.log(req.body);
-    if (!email || !password || !passwordVerify)
+    if (!email || !password)
       return res
         .status(400)
         .json({ errorMessage: "Please enter all required fields." });
@@ -21,10 +21,10 @@ router.post("/", async (req, res) => {
         errorMessage: "Please enter a password of at least 6 characters.",
       });
 
-    if (password !== passwordVerify)
-      return res.status(400).json({
-        errorMessage: "Please enter the same password twice.",
-      });
+    // if (password !== passwordVerify)
+    //   return res.status(400).json({
+    //     errorMessage: "Please enter the same password twice.",
+    //   });
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
@@ -86,7 +86,7 @@ router.post("/login", async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (!existingUser)
-      return res.status(401).json({ errorMessage: "Wrong email or password." });
+      return res.status(401).json({ errorMessage: "User not found" });
 
     const passwordCorrect = await bcrypt.compare(
       password,
